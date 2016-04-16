@@ -2,13 +2,14 @@
 class Subtitle
 
     # Global counter of subtitles
-    @@order = 0
+    @@count = 0
 
     # Initialize with no data
-    def initialize
-        @@order += 1
-        @order = @@order
+    def initialize block
+        @@count += 1
+        @index = @@count
         @contents = Array.new
+        @contents += block
     end
 
     # Add a line to subtitle

@@ -17,13 +17,24 @@ class SRTFile
 
         # Parse the contents
         @subtitles = Array.new
-        subtitle = Subtitle.new
+        textblock = Array.new
         @contents.each do | line |
-            if line.empty?
-                @subtitles.push subtitle unless subtitle.empty?
-            end
+            line.chomp!
 
-            subtitle.add line
+            # Read text blocks till newlines are found
+            if line.empty?
+
+                # Record text block as a subtitle
+                subtitle = Subtitle.new textblock
+                @subtitles.push subtitle unless subtitle.empty?
+
+                # Prepare to read next block
+                textblock = Array.new
+            else
+
+                # Continue reading text block
+                textblock.push line
+            end
         end
     end
 end
