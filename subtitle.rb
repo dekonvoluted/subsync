@@ -63,6 +63,15 @@ class Subtitle
         @stop += 0.001 * milliseconds
     end
 
+    # Stretch subtitle by scale value
+    def stretch scale
+
+        # Stretch subtitle
+        origin = Time.new( 0, 1, 1 )
+        @start = origin + scale * ( @start - origin )
+        @stop = origin + scale * ( @stop - origin )
+    end
+
     # Write subtitle in proper format
     def to_s
 
