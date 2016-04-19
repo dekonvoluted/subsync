@@ -11,6 +11,9 @@ class Subtitle
     # Initialize subtitle with text block
     def initialize textblock
 
+        # Drop any CR/LF terminators
+        textblock.map! &:chomp
+
         # No newlines allowed
         return if textblock.any? &:empty?
 
