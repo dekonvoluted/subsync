@@ -15,11 +15,13 @@ class SRTFile
             @contents = file.readlines
         end
 
+        # Chomp each content line
+        @contents.map! &:chomp
+
         # Parse the contents
         @subtitles = Array.new
         textblock = Array.new
         @contents.each do | line |
-            line.chomp!
 
             # Read text blocks till newlines are found
             if line.empty?
