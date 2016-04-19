@@ -55,6 +55,14 @@ class Subtitle
         return false
     end
 
+    # Delay subtitle by step value
+    def delay milliseconds
+
+        # Advance both start and stop times
+        @start += 0.001 * milliseconds
+        @stop += 0.001 * milliseconds
+    end
+
     # Write subtitle in proper format
     def to_s
 
