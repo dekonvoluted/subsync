@@ -1,53 +1,70 @@
 # A single subtitle dialog
 class Subtitle
 
-    # Global counter of subtitles
-    @@count = 0
+    # Index can be rewritten directly
+    attr_accessor :index
 
-    # Initialize with no data
-    def initialize block
-        @@count += 1
-        @index = @@count
-        @contents = Array.new
-        @contents += block
+    # Time codes can be read
+    attr_reader :start
+    attr_reader :stop
 
-        validate
+    # Initialize subtitle with text block
+    def initialize textblock
+
+        # No newlines allowed
+        return if textblock.any? &:empty?
+
+        # Read index from the first line
+        @index = textblock.at( 0 ).to_i
+        raise ArgumentError, "Invalid index: #{textblock.at 0}" unless @index.to_s == textblock.at( 0 )
+
+        # Read time code from second line
+        timeCodeLine = textblock.at( 1 ).scan /^(.*) --> (.*)$/
+        raise ArgumentError, "Invalid timecode: #{textblock.at 1}" unless timeCodeLine.size == 1
+
+        startTimeCode, stopTimeCode = timeCodeLine.flatten
+        startHour, startMinute, startSecond, startMillisecond = startTimeCode.scan( /(\d+):(\d{2}):(\d{2})(?:,(\d{3}))?/ ).flatten
+        stopHour, stopMinute, stopSecond, stopMillisecond = stopTimeCode.scan( /(\d+):(\d{2}):(\d{2})(?:,(\d{3}))?/ ).flatten
+        startMillisecond = 0.0 if startMillisecond.nil?
+        stopMillisecond = 0.0 if stopMillisecond.nil?
+
+        @start = Time.new( 0, 1, 1, startHour.to_i, startMinute.to_i, startSecond.to_f + ( 0.001 * startMillisecond.to_f ) )
+        @stop = Time.new( 0, 1, 1, stopHour.to_i, stopMinute.to_i, stopSecond.to_f + ( 0.001 * stopMillisecond.to_f ) )
+        raise ArgumentError, "Invalid timecode: #{textblock.at 1}" if @start > @stop
+
+        # Record rest of the text block as dialog lines
+        @dialog = textblock[ 2 .. -1 ]
     end
 
-    # Add a line to subtitle
-    def add line
-        @contents.push line
-
-        validate
-    end
-
-    # Verify the block is a subtitle block
-    def validate
-
-        # Empty block is valid
-        return if @contents.empty?
-
-        # First line should be an input index
-        @inputIndex = @contents.at( 0 ).to_i
-        raise ArgumentError, "Invalid index: #{@contents.at 0}" unless @inputIndex.to_s == @contents.at( 0 )
-        return if @contents.size == 1
-
-        # Second line should be a time code
-        timeCode = @contents.at( 1 ).scan( /^(\d+):(\d+):(\d{2}),(\d{3}) --> (\d+):(\d+):(\d{2}),(\d{3})$/ )
-        raise ArgumentError, "Invalid timecode: #{@contents.at 1}" unless timeCode.size == 1
-        timeCode = timeCode.at 0
-        raise ArgumentError, "Invalid timecode: #{@contents.at 1}" unless timeCode.size == 8
-        @startTime = Time.new( 0, 1, 1, timeCode.at( 0 ).to_i, timeCode.at( 1 ).to_i, timeCode.at( 2 ).to_f + ( 0.001 * timeCode.at( 3 ).to_f ) )
-        @endTime = Time.new( 0, 1, 1, timeCode.at( 4 ).to_i, timeCode.at( 5 ).to_i, timeCode.at( 6 ).to_f + ( 0.001 * timeCode.at( 7 ).to_f ) )
-        return if @contents.size == 2
-
-        # Remaining lines are plain text
-        @dialog = @contents[ 2..-1 ]
-    end
-
-    # Is this subtitle empty?
+    # An invalid or discardable subtitle is "empty"
     def empty?
-        return @contents.empty?
+
+        # Index must be present
+        return true if @index.nil?
+
+        # Start and stop should not be exactly the same
+        return true if @start == @stop
+
+        # Dialog should be present
+        return true if @dialog.nil?
+
+        # Valid subtitle
+        return false
+    end
+
+    # Write subtitle in proper format
+    def to_s
+
+        # First line is the index
+        subtitle = "#{@index}\n"
+
+        # Second line is the time code
+        subtitle += "#{@start.strftime "%H:%M:%S,%L"} --> #{@stop.strftime "%H:%M:%S,%L"}\n"
+
+        # Remaining lines are dialog lines
+        subtitle += @dialog.join "\n"
+
+        return subtitle
     end
 end
 
