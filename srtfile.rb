@@ -63,5 +63,17 @@ class SRTFile
             subtitle.stretch scale
         end
     end
+
+    # Write out subtitles
+    def write filePath
+
+        # Write each subtitle
+        File.open( filePath, 'w' ) do | file |
+            @subtitles.each do | subtitle |
+                file.puts subtitle
+                file.puts
+            end
+        end
+    end
 end
 
