@@ -10,6 +10,8 @@ options = Hash.new
 options[ :delay ] = 0.0
 options[ :stretch ] = 1.0
 
+ARGV.push "-h" if ARGV.empty?
+
 if __FILE__ == $0
     optparse = OptionParser.new do | opts |
         opts.banner = "Usage: #{$0} [OPTIONS] [SRTFILE] [SRTFILE] ..."
