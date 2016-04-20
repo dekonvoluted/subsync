@@ -6,9 +6,21 @@ require_relative "srtfile"
 
 require "optparse"
 
+options = Hash.new
+options[ :delay ] = 0.0
+options[ :stretch ] = 1.0
+
 if __FILE__ == $0
     optparse = OptionParser.new do | opts |
         opts.banner = "Usage: #{$0} [OPTIONS] [SRTFILE] [SRTFILE] ..."
+
+        opts.on( "-d DELAY", "--delay DELAY", "Delay subtitles by DELAY ms" ) do | value |
+            options[ :delay ] = value
+        end
+
+        opts.on( "-s FACTOR", "--stretch FACTOR", "Stretch subtitles by FACTOR" ) do | value |
+            options[ :stretch ] = value
+        end
     end
 
     optparse.parse!
