@@ -17,11 +17,11 @@ if __FILE__ == $0
         opts.banner = "Usage: #{$0} [OPTIONS] [SRTFILE] [SRTFILE] ..."
 
         opts.on( "-d DELAY", "--delay DELAY", "Delay subtitles by DELAY ms" ) do | value |
-            options[ :delay ] = value
+            options[ :delay ] = value.to_f
         end
 
         opts.on( "-s FACTOR", "--stretch FACTOR", "Stretch subtitles by FACTOR" ) do | value |
-            options[ :stretch ] = value
+            options[ :stretch ] = value.to_f
         end
     end
 

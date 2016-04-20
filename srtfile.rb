@@ -39,5 +39,29 @@ class SRTFile
             end
         end
     end
+
+    # Delay subtitles by step
+    def delay milliseconds
+
+        # Do nothing with zero delay
+        return if milliseconds == 0.0
+
+        # Apply delay to all subtitles
+        @subtitles.each do | subtitle |
+            subtitle.delay milliseconds
+        end
+    end
+
+    # Stretch subtitles by factor
+    def stretch scale
+
+        # Do nothing with unity stretch
+        return if scale == 1.0
+
+        # Apply stretch to all subtitles
+        @subtitles.each do | subtitle |
+            subtitle.stretch scale
+        end
+    end
 end
 
