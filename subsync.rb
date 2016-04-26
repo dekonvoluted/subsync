@@ -38,7 +38,7 @@ if __FILE__ == $0
         srtFile.delay options[ :delay ]
         srtFile.stretch options[ :stretch ]
         FileUtils.move path, "#{File.basename path, ".srt"}-#{options[ :originalSuffix ]}.srt"
-        srtFile.write path
+        srtFile.dump path
     end
 end
 

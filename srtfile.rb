@@ -65,7 +65,7 @@ class SRTFile
     end
 
     # Write out subtitles
-    def write filePath
+    def dump filePath
 
         # Write each subtitle
         File.open( filePath, 'w' ) do | file |
