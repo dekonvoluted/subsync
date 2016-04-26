@@ -72,6 +72,13 @@ class Subtitle
         @stop = origin + scale * ( @stop - origin )
     end
 
+    # Output the formatted timecode of the subtitle
+    def timecode
+
+        return "#{@start.strftime "%H:%M:%S,%L"} --> #{@stop.strftime "%H:%M:%S,%L"}\n"
+
+    end
+
     # Write subtitle in proper format
     def to_s
 
@@ -79,7 +86,7 @@ class Subtitle
         subtitle = "#{@index}\n"
 
         # Second line is the time code
-        subtitle += "#{@start.strftime "%H:%M:%S,%L"} --> #{@stop.strftime "%H:%M:%S,%L"}\n"
+        subtitle += timecode
 
         # Remaining lines are dialog lines
         subtitle += @dialog.join "\n"
