@@ -58,6 +58,9 @@ class SRTFile
         # Do nothing with unity stretch
         return if scale == 1.0
 
+        # Avoid invalid stretch factors
+        raise ArgumentError, "Stretch factor must be positive" if scale <= 0.0
+
         # Apply stretch to all subtitles
         @subtitles.each do | subtitle |
             subtitle.stretch scale
