@@ -31,6 +31,9 @@ class Subtitle
         startMillisecond = 0.0 if startMillisecond.nil?
         stopMillisecond = 0.0 if stopMillisecond.nil?
 
+        raise ArgumentError, "Invalid timecode: #{textblock.at 1}" unless startHour.to_i < 24
+        raise ArgumentError, "Invalid timecode: #{textblock.at 1}" unless stopHour.to_i < 24
+
         @start = Time.new( 0, 1, 1, startHour.to_i, startMinute.to_i, startSecond.to_f + ( 0.001 * startMillisecond.to_f ) )
         @stop = Time.new( 0, 1, 1, stopHour.to_i, stopMinute.to_i, stopSecond.to_f + ( 0.001 * stopMillisecond.to_f ) )
         raise ArgumentError, "Invalid timecode: #{textblock.at 1}" if @start > @stop
@@ -57,6 +60,17 @@ class Subtitle
 
     # Delay subtitle by step value
     def delay milliseconds
+
+        # Do nothing with zero delay
+        return if milliseconds == 0.0
+
+        # Avoid starting at negative times
+        minDelay = 1000.0 * ( Time.new( 0, 1, 1 ) - @start )
+        raise ArgumentError, "Delay drops below minimum possible( #{minDelay} ) for timecode: #{timecode}" if milliseconds < minDelay
+
+        # Avoid ending more than 24 hours from start
+        maxDelay = 1000.0 * ( Time.new( 0, 1, 2 ) - @stop )
+        raise ArgumentError, "Delay exceeds maximum possible( #{maxDelay} ) for timecode: #{timecode}" if milliseconds >= maxDelay
 
         # Advance both start and stop times
         @start += 0.001 * milliseconds
