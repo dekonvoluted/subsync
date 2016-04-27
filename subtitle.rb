@@ -80,6 +80,18 @@ class Subtitle
     # Stretch subtitle by scale value
     def stretch scale
 
+        # Do nothing with unity stretch
+        return if scale == 1.0
+
+        # Avoid invalid stretch factors
+        raise ArgumentError, "Stretch factor must be positive" if scale <= 0.0
+
+        origin = Time.new( 0, 1, 1 )
+
+        # Avoid ending more than 24 hours from start
+        maxStretch = ( Time.new( 0, 1, 2 ) - origin ) / ( @stop - origin )
+        raise ArgumentError, "Stretch exceeds maximum possible( #{maxStretch}x ) for timecode: #{timecode}" if scale >= maxStretch
+
         # Stretch subtitle
         origin = Time.new( 0, 1, 1 )
         @start = origin + scale * ( @start - origin )
