@@ -18,6 +18,9 @@ class SRTFile
         # Chomp each content line
         @contents.map! &:chomp
 
+        # Drop leading BOM for UTF-8 files
+        @contents[ 0 ].gsub! /^\xef\xbb\xbf/, ''
+
         # Parse the contents
         @subtitles = Array.new
         textblock = Array.new
